@@ -12,3 +12,7 @@
 (defn read-torrent [filename]
   (slurp filename)
   )
+
+(defn read-bencode [string]
+  1
+  )
