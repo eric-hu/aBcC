@@ -2,6 +2,9 @@
   (:require [clojure.test :refer :all]
             [abcc.core :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(deftest parsing-torrent-file
+  (testing "it reads and parses the torrent test file"
+    (is (not (= 0 (count
+                   (read-torrent "test/ubuntu-14.04-desktop-i386.iso.torrent"
+                                ))))
+        "non zero file opened")
