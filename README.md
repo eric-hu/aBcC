@@ -24,6 +24,15 @@ FIXME: listing of options this app accepts.
 
 ...
 
+### Conventions
+
+In general, names will follow the Clojure library naming standards.
+
+Error handling may rely on Exceptions (which might be non-idiomatic?), println
+(side effects) or something else entirely.  This is to be determined, pending
+more research.  Until then, errors will be checked for, but maybe silently
+handled on detection ;)
+
 ### Any Other Sections
 ### That You Think
 ### Might be Useful
