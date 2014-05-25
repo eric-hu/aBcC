@@ -40,10 +40,21 @@
     )
 )
 
+(defn read-bencode-recur [string]
+  (case (first string)
+    nil ""
+    \i (let [[parsed-int remaining-str]
+             (read-bencoded-integer
+               ; cast char iseq to string
+               (apply str (rest string)))]
+         (into [parsed-int]
+                 (read-bencode-recur remaining-str))
+         )
+    )
+  )
+
 ; Read a bencoded string and parse the results into a collection of
 ; clojure values
 (defn read-bencode [string]
-  (case (first string)
-    \i (read-bencoded-integer (apply str (rest string)))
-    )
+  (read-bencode-recur string)
   )

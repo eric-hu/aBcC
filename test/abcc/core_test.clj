@@ -17,8 +17,14 @@
 (deftest test-read-bencode
   (testing
     "it reads a properly bencoded number"
-    (is (= [123 ""] (read-bencode "i123e")))
-    (is (= [-3 ""] (read-bencode "i-3e")))
+    (is (= [123] (read-bencode "i123e")))
+    (is (= [-3] (read-bencode "i-3e")))
+    )
+  (testing
+    "it reads multiple bencoded numbers"
+    (is (= [123 12] (read-bencode "i123ei12e")))
+    (is (= [123 12] (read-bencode "i123ei12e")))
+    (is (= [321 12 3 345] (read-bencode "i321ei12ei3ei345e")))
     )
 
   (testing "it reads bencoded strings"
