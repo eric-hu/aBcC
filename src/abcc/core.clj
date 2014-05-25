@@ -12,10 +12,10 @@
   (slurp filename)
   )
 
-(defn read-bencode [string]
-  " "
-  )
-
+; Read an "e"-terminated integer out of string and return the number, parsed
+; and converted to a Java integer and the remainder string.
+;
+; "33eadsf" => [33, "asdf"]
 (defn read-bencoded-integer [string]
   (let [[number-as-string remainder-string] (clojure.string/split string #"e" 2)]
     (if (or
@@ -39,3 +39,11 @@
       [(Integer. number-as-string) remainder-string])
     )
 )
+
+; Read a bencoded string and parse the results into a collection of
+; clojure values
+(defn read-bencode [string]
+  (case (first string)
+    \i (read-bencoded-integer (apply str (rest string)))
+    )
+  )

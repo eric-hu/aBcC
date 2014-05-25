@@ -15,10 +15,12 @@
     ))
 
 (deftest test-read-bencode
-  (testing "it reads a properly bencoded number"
-    ;(is 123 (read-bencoded-integer "i123e"))
-    ;(is -3 (read-bencoded-integer "i-3e"))
+  (testing
+    "it reads a properly bencoded number"
+    (is (= [123 ""] (read-bencode "i123e")))
+    (is (= [-3 ""] (read-bencode "i-3e")))
     )
+
   (testing "it reads bencoded strings"
     ;(is (= "digit" (read-bencode "5:digit")))
     ;(is (= "super fuzzy" (read-bencode "11:super fuzzy")))
