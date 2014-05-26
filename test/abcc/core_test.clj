@@ -23,7 +23,6 @@
   (testing
     "it reads multiple bencoded numbers"
     (is (= [123 12] (read-bencode "i123ei12e")))
-    (is (= [123 12] (read-bencode "i123ei12e")))
     (is (= [321 12 3 345] (read-bencode "i321ei12ei3ei345e")))
     )
 
