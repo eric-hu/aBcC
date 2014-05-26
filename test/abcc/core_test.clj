@@ -28,9 +28,16 @@
     )
 
   (testing "it reads bencoded strings"
-    ;(is (= "digit" (read-bencode "5:digit")))
-    ;(is (= "super fuzzy" (read-bencode "11:super fuzzy")))
-    ))
+    (is (= ["digit"] (read-bencode "5:digit")))
+    (is (= ["super fuzzy"] (read-bencode "11:super fuzzy")))
+    (is (= ["yolokitten"] (read-bencode "10:yolokitten")))
+    (is (= ["yolokitten" "yolopuppy"] (read-bencode "10:yolokitten9:yolopuppy")))
+    )
+
+  (testing "it raises an exception when given an invalid bencode string"
+    (is (thrown? Exception (read-bencode "z")))
+    )
+  )
 
 (deftest test-read-bencoded-integer
   (testing

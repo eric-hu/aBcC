@@ -40,8 +40,21 @@
     )
 )
 
+; Read a bencoded string of the format:
+;   "7:puppies"
+; and returns a vector with the parsed string and the rest of the string
+;   "7:puppies" => ["puppies" ""]
+(defn read-bencoded-string [string]
+  (let [[length-string remainder] (clojure.string/split string #":" 2)
+       length (Integer. (apply str length-string))
+       [parsed-string remainder] (split-at length remainder)
+       ]
+    [(apply str parsed-string) remainder]
+    )
+  )
+
 (defn read-bencode-recur [string]
-  (case (first string)
+  (condp = (first string)
     nil ""
     \i (let [[parsed-int remaining-str]
              (read-bencoded-integer
@@ -50,6 +63,18 @@
          (into [parsed-int]
                  (read-bencode-recur remaining-str))
          )
+
+    ; else check if first character is a digit
+    (if (Character/isDigit (first string))
+      (let [[parsed-str remaining-str] (read-bencoded-string string)
+            remaining-str (apply str remaining-str)]
+        (into [parsed-str]
+             (read-bencode-recur remaining-str)
+        ))
+      (throw (Exception. (str
+                          "Unrecognized bencode type.  First character: "
+                          (first string))))
+      )
     )
   )
 
