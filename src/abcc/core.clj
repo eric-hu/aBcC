@@ -47,7 +47,8 @@
     [(apply str parsed-string) remainder]))
 
 (defn read-bencode-recur [string]
-  (condp = (first string)
+  (condp =
+    (first string)
     nil ""
     \i (let [[parsed-int remaining-str]
              (read-bencoded-integer
@@ -57,8 +58,10 @@
                  (read-bencode-recur remaining-str)))
 
     ; else check if first character is a digit
-    (if (Character/isDigit (first string))
-      (let [[parsed-str remaining-str] (read-bencoded-string string)
+    (if
+      (Character/isDigit (first string))
+      (let [[parsed-str remaining-str]
+            (read-bencoded-string string)
             remaining-str (apply str remaining-str)]
         (into [parsed-str]
              (read-bencode-recur remaining-str)))
