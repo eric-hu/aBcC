@@ -9,8 +9,7 @@
   (println "Hello, World!"))
 
 (defn read-torrent [filename]
-  (slurp filename)
-  )
+  (slurp filename))
 
 ; Read an "e"-terminated integer out of string and return the number, parsed
 ; and converted to a Java integer and the remainder string.
@@ -31,14 +30,10 @@
                    (= \0 (nth number-as-string 1)))
               (and (> (count number-as-string) 2)
                    (= \- (first number-as-string))
-                   (= \0 (nth number-as-string 1)))
-              )
-          )
+                   (= \0 (nth number-as-string 1)))))
       (throw (Exception. "nettikoloy"))
 
-      [(Integer. number-as-string) remainder-string])
-    )
-)
+      [(Integer. number-as-string) remainder-string])))
 
 ; Read a bencoded string of the format:
 ;   "7:puppies"
@@ -49,9 +44,7 @@
        length (Integer. (apply str length-string))
        [parsed-string remainder] (split-at length remainder)
        ]
-    [(apply str parsed-string) remainder]
-    )
-  )
+    [(apply str parsed-string) remainder]))
 
 (defn read-bencode-recur [string]
   (condp = (first string)
@@ -61,25 +54,19 @@
                ; cast char iseq to string
                (apply str (rest string)))]
          (into [parsed-int]
-                 (read-bencode-recur remaining-str))
-         )
+                 (read-bencode-recur remaining-str)))
 
     ; else check if first character is a digit
     (if (Character/isDigit (first string))
       (let [[parsed-str remaining-str] (read-bencoded-string string)
             remaining-str (apply str remaining-str)]
         (into [parsed-str]
-             (read-bencode-recur remaining-str)
-        ))
+             (read-bencode-recur remaining-str)))
       (throw (Exception. (str
                           "Unrecognized bencode type.  First character: "
-                          (first string))))
-      )
-    )
-  )
+                          (first string)))))))
 
 ; Read a bencoded string and parse the results into a collection of
 ; clojure values
 (defn read-bencode [string]
-  (read-bencode-recur string)
-  )
+  (read-bencode-recur string))
