@@ -15,6 +15,7 @@
         "reads the announce attribute of a torrent file")))
 
 (deftest test-read-bencode
+  ; Numbers
   (testing
     "it reads a properly bencoded number"
     (is (= [123] (read-bencode "i123e")))
@@ -25,6 +26,7 @@
     (is (= [123 12] (read-bencode "i123ei12e")))
     (is (= [321 12 3 345] (read-bencode "i321ei12ei3ei345e"))))
 
+  ; Strings
   (testing "it reads bencoded strings"
     (is (= ["digit"] (read-bencode "5:digit")))
     (is (= ["super fuzzy"] (read-bencode "11:super fuzzy")))
@@ -33,6 +35,12 @@
          ["yolokitten" "yolopuppy"]
          (read-bencode "10:yolokitten9:yolopuppy"))))
 
+  ; Mixed types
+  (testing
+    "it reads mixed bencoded strings and integers"
+    (is (= [2 "fuzzy kittens"] (read-bencode "i2e13:fuzzy kittens"))))
+
+  ; Errors
   (testing "it raises an exception when given an invalid bencode string"
     (is (thrown? Exception (read-bencode "z")))))
 
