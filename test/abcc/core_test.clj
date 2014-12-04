@@ -4,14 +4,15 @@
 
 (deftest test-read-torrent
   (testing "it reads and parses a torrent file"
-    (is (not (= 0 (count
-                    (read-torrent "test/ubuntu-14.04-desktop-i386.iso.torrent"))))
+    (is (not (=
+              0
+              (count
+                (read-torrent "test/ubuntu-14.04-desktop-i386.iso.torrent"))))
         "non zero file opened")
 
     ; PENDING: clojure test doesn't have a pending :(
-    ;(is false
-    ;"reads the announce attribute of a torrent file")
-    ))
+    #_(is false
+        "reads the announce attribute of a torrent file")))
 
 (deftest test-read-bencode
   (testing
@@ -28,7 +29,9 @@
     (is (= ["digit"] (read-bencode "5:digit")))
     (is (= ["super fuzzy"] (read-bencode "11:super fuzzy")))
     (is (= ["yolokitten"] (read-bencode "10:yolokitten")))
-    (is (= ["yolokitten" "yolopuppy"] (read-bencode "10:yolokitten9:yolopuppy"))))
+    (is (=
+         ["yolokitten" "yolopuppy"]
+         (read-bencode "10:yolokitten9:yolopuppy"))))
 
   (testing "it raises an exception when given an invalid bencode string"
     (is (thrown? Exception (read-bencode "z")))))
