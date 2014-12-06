@@ -49,13 +49,16 @@
 (defn read-bencode-recur [string]
   (condp =
     (first string)
+    ; empty string (base recursion case)
     nil ""
+    ; integers
     \i (let [[parsed-int remaining-str]
              (read-bencoded-integer
                ; cast char iseq to string
                (apply str (rest string)))]
          (into [parsed-int]
                  (read-bencode-recur remaining-str)))
+    \l "recur on rest of string until e"
 
     ; else check if first character is a digit
     (if

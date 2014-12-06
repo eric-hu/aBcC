@@ -35,10 +35,17 @@
          ["yolokitten" "yolopuppy"]
          (read-bencode "10:yolokitten9:yolopuppy"))))
 
-  ; Mixed types
+  ; Lists
+  (testing "it reads simple bencoded lists into vectors"
+    (is (=
+         ["big daddy" "little daddy"]
+         (read-bencode "l9:big daddy11:little daddye"))))
+
+  ; Mixed: string-number
   (testing
     "it reads mixed bencoded strings and integers"
-    (is (= [2 "fuzzy kittens"] (read-bencode "i2e13:fuzzy kittens"))))
+    (is (= [2 "fuzzy kittens"] (read-bencode "i2e13:fuzzy kittens")))
+    (is (= ["fuzzy kittens" 2] (read-bencode "13:fuzzy kittensi2e"))))
 
   ; Errors
   (testing "it raises an exception when given an invalid bencode string"
