@@ -1,0 +1,15 @@
+12/26/2014
+String types: count errors in string lengths for test
+Spent an hour debugging why a test was failing.  The implementation was where I
+wanted, but the test data had a count mismatch with the actual string length.
+
+List parsing: this seems to necessitate recursive parsing, because a list can
+contain any number of lists.  I'm not used to thinking recursively.  Explored
+modifying one existing (recursive) parsing function to take a stopping
+condition as a parameter, but this problem requires conditional behavior as
+well (return an empty string or return the remaining input stream).  Considered
+modifying the return signature to include the output-in-progress and the
+input-in-progress.  This seems dirty.
+
+Would like to next examine rewrite parsing behavior to parse one token at a
+time as a separate function.
