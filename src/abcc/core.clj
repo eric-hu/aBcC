@@ -1,6 +1,9 @@
 (ns abcc.core
   (:gen-class))
 
+(defn- private-split-string-at-e [string]
+  (clojure.string/split string #"e" 2))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
@@ -11,12 +14,18 @@
 (defn read-torrent [filename]
   (slurp filename))
 
-; Read an "e"-terminated integer out of string and return the number, parsed
-; and converted to a Java integer and the remainder string.
+; read-bencoded-integer
 ;
-; "33eadsf" => [33, "asdf"]
+; Input: an integer in a string in the format: "<integer>e" and possibly some
+; other bencoded values following.
+;   Example:
+;   "33e4:adsf"
+;
+; Output: a vector of the Java integer and the remainder string
+;   Example:
+;   [33, "4:asdf"]
 (defn read-bencoded-integer [string]
-  (let [[number-as-string remainder-string] (clojure.string/split string #"e" 2)]
+  (let [[number-as-string remainder-string] (private-split-string-at-e string)]
     (if (or
           ; check if string is \e terminated
           (and (= 0 (count remainder-string))
@@ -35,10 +44,15 @@
 
       [(Integer. number-as-string) remainder-string])))
 
-; Read a bencoded string of the format:
+; read-bencoded-string
+;
+; Input: a bencoded string of the format "<length>:<string>"
+;   Example:
 ;   "7:puppies"
-; and returns a vector with the parsed string and the rest of the string
-;   "7:puppies" => ["puppies" ""]
+;
+; Output: a vector with the parsed string and the rest of the string
+;   Example:
+;   ["puppies" ""]
 (defn read-bencoded-string [string]
   (let [[length-string remainder] (clojure.string/split string #":" 2)
        length (Integer. (apply str length-string))
@@ -58,6 +72,14 @@
 (defn- private-read-bencoded-list [string]
   )
 
+; read-bencode-recur
+;
+; [string]
+;
+; Takes a string of bencode formatting and parses it one chunk at a time,
+; recurring on the rest.  Stops when the first character of the string is nil.
+;
+; Returns the parsed values as a vector
 (defn read-bencode-recur [string]
   (let [first-char (first string)]
     (condp = first-char
