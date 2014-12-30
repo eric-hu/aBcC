@@ -38,8 +38,12 @@
   ; Lists
   (testing "it reads simple bencoded lists into vectors"
     (is (=
-         ["big daddy" "little daddy"]
-         (read-bencode "l9:big daddy11:little daddye"))))
+         [["big daddy" "little daddy"]]
+         (read-bencode "l9:big daddy12:little daddye"))))
+  (testing "it reads a list with other bencode types"
+    (is (=
+         [["big daddy" "little daddy"] "pies"]
+         (read-bencode "l9:big daddy12:little daddye4:pies"))))
 
   ; Mixed: string-number
   (testing
@@ -87,3 +91,4 @@
 
   (testing "it returns the rest of the string"
     (is (= [11 "5:hello"] (read-bencoded-integer "11e5:hello")))))
+
