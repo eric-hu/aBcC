@@ -69,11 +69,6 @@
     (is (thrown? Exception (read-bencoded-integer "0n0")))
     (is (thrown? Exception (read-bencoded-integer "1ne0"))))
 
-  (testing "it raises an exception when passed an improperly terminated number"
-    (is (thrown? Exception (read-bencoded-integer "123")))
-    (is (thrown? Exception (read-bencoded-integer "123n")))
-    (is (thrown? Exception (read-bencoded-integer "0n"))))
-
     (testing "it raises an exception when passed an invalid digit combination"
       (is (thrown? Exception (read-bencoded-integer "01e"))
           "the bittorrent spec prohibits zero-prefixed nonzero numbers")
