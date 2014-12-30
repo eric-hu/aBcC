@@ -1,6 +1,14 @@
 (ns abcc.core
   (:gen-class))
 
+; private-split-string-at-e
+;
+; Input: a string or character sequence
+;   Example: "aedef"
+;
+; Output: a vector of two character sequences that add up to the input string,
+; split at the first "e", with the splitting "e" dropped.
+;   Example: [(\a) (\d \e \f)]
 (defn- private-split-string-at-e [string]
   (clojure.string/split string #"e" 2))
 
@@ -13,6 +21,31 @@
 
 (defn read-torrent [filename]
   (slurp filename))
+
+; private-string-ends-with-e
+; helper function for integer parsing
+(defn- private-string-ends-with-e
+  [remainder-string string]
+  (and (= 0 (count remainder-string))
+           (not (= \e (last string)))))
+
+; private-string-is-non-zero-and-begins-with-zero
+; helper function for integer parsing
+(defn- private-string-is-non-zero-and-begins-with-zero
+  [number-as-string]
+  (and (> (count number-as-string) 1)
+         (= \0 (first number-as-string))))
+
+; private-string-is-negative-prefixed-zero
+; helper function for integer parsing
+(defn- private-string-is-negative-prefixed-zero
+  [number-as-string]
+  (or (and (= (count number-as-string) 2)
+             (= \- (first number-as-string))
+             (= \0 (nth number-as-string 1)))
+        (and (> (count number-as-string) 2)
+             (= \- (first number-as-string))
+             (= \0 (nth number-as-string 1)))))
 
 ; read-bencoded-integer
 ;
@@ -27,20 +60,11 @@
 (defn read-bencoded-integer [string]
   (let [[number-as-string remainder-string] (private-split-string-at-e string)]
     (if (or
-          ; check if string is \e terminated
-          (and (= 0 (count remainder-string))
-               (not (= \e (last string))))
-          ; check if string is non-zero and begins with 0
-          (and (> (count number-as-string) 1)
-               (= \0 (first number-as-string)))
-          ; check if string is negative-prefixed zero
-          (or (and (= (count number-as-string) 2)
-                   (= \- (first number-as-string))
-                   (= \0 (nth number-as-string 1)))
-              (and (> (count number-as-string) 2)
-                   (= \- (first number-as-string))
-                   (= \0 (nth number-as-string 1)))))
-      (throw (Exception. "nettikoloy"))
+          (private-string-ends-with-e remainder-string string)
+          (private-string-is-non-zero-and-begins-with-zero number-as-string)
+          (private-string-is-negative-prefixed-zero number-as-string))
+
+      (throw (Exception. "preconditions failed for integer bencode parsing"))
 
       [(Integer. number-as-string) remainder-string])))
 
