@@ -46,31 +46,48 @@
        ]
     [(apply str parsed-string) remainder]))
 
-(defn read-bencode-recur [string]
-  (condp =
-    (first string)
-    ; empty string (base recursion case)
-    nil ""
-    ; integers
-    \i (let [[parsed-int remaining-str]
-             (read-bencoded-integer
-               ; cast char iseq to string
-               (apply str (rest string)))]
-         (into [parsed-int]
-                 (read-bencode-recur remaining-str)))
-    \l "recur on rest of string until e"
+; read-bencoded-list
+;
+; Takes a string of bencode formatting and parses it in bencode type chunks.
+; It stops when the first character is \e.
+;
+; Returns a vector with 2 values:
+; 1. the parsed list, a vector itself
+; 2. the remainder of the unparsed string
 
-    ; else check if first character is a digit
-    (if
-      (Character/isDigit (first string))
-      (let [[parsed-str remaining-str]
-            (read-bencoded-string string)
-            remaining-str (apply str remaining-str)]
-        (into [parsed-str]
-             (read-bencode-recur remaining-str)))
-      (throw (Exception. (str
-                          "Unrecognized bencode type.  First character: "
-                          (first string)))))))
+(defn- private-read-bencoded-list [string]
+  )
+
+(defn read-bencode-recur [string]
+  (let [first-char (first string)]
+    (condp = first-char
+      ; Stopping condition: empty string (base recursion case)
+      nil ""
+      ; Integers
+      \i (let [[parsed-int remaining-str]
+               (read-bencoded-integer
+                 ; cast char sequence to string
+                 (apply str (rest string)))]
+           (into [parsed-int]
+                 (read-bencode-recur remaining-str)))
+      ; Lists
+      \l (let [[parsed-list remaining-stream]
+               (private-read-bencoded-list (apply str (rest string)))]
+               (into [parsed-list]
+                     (read-bencode-recur remaining-stream)))
+
+      ; else check if first character is a digit
+      (if (Character/isDigit first-char)
+        ; String
+        (let [[parsed-str remaining-str]
+              (read-bencoded-string string)
+              remaining-str (apply str remaining-str)]
+          (into [parsed-str]
+                (read-bencode-recur remaining-str)))
+        ; Unsupported bencode type
+        (throw (Exception. (str
+                             "Unrecognized bencode type.  First character: "
+                             first-char)))))))
 
 ; Read a bencoded string and parse the results into a collection of
 ; clojure values
