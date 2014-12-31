@@ -55,12 +55,26 @@
   (testing "it raises an exception when given an invalid bencode string"
     (is (thrown? Exception (read-bencode "z")))))
 
+(deftest test-read-bencoded-string
+
+  (testing
+    "it returns the parsed string when passed a properly bencoded string"
+    (is (= ["super fuzzy" '()] (read-bencoded-string "11:super fuzzy"))))
+
+  (testing
+    "it returns the parsed string when passed a properly bencoded character sequence")
+    (is (= ["super" '()] (read-bencoded-string '(\5 \: \s \u \p \e \r)))))
+
 (deftest test-read-bencoded-integer
   (testing
     "it returns the number when passed a properly terminated number-substring"
     (is (= [123 "yolokitten"] (read-bencoded-integer "123eyolokitten")))
     (is (= [-3 ""] (read-bencoded-integer "-3e")))
     (is (= [0 ""] (read-bencoded-integer "0e"))))
+
+  (testing
+    "it works with character sequences that aren't strings"
+    (is (= [123 ""] (read-bencoded-integer '(\1 \2 \3 \e)))))
 
   (testing "it raises an exception when passed an improperly terminated number"
     (is (thrown? Exception (read-bencoded-integer "123")))

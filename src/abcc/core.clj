@@ -10,7 +10,7 @@
 ; split at the first "e", with the splitting "e" dropped.
 ;   Example: [(\a) (\d \e \f)]
 (defn- private-split-string-at-e [string]
-  (clojure.string/split string #"e" 2))
+  (clojure.string/split (apply str string) #"e" 2))
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -49,14 +49,14 @@
 
 ; read-bencoded-integer
 ;
-; Input: an integer in a string in the format: "<integer>e" and possibly some
-; other bencoded values following.
+; Input: an integer in a character sequence in the format: "<integer>e" and
+; possibly some other bencoded values following.
 ;   Example:
-;   "33e4:adsf"
+;   (\3 \3 \e \4 \: \a \d \s \f)
 ;
-; Output: a vector of the Java integer and the remainder string
+; Output: a vector of the Java integer and the remainder character sequence.
 ;   Example:
-;   [33, "4:asdf"]
+;   [33, (\4 \: \a \s \d \f)]
 (defn read-bencoded-integer [string]
   (let [[number-as-string remainder-string] (private-split-string-at-e string)]
     (if (or
@@ -70,18 +70,18 @@
 
 ; read-bencoded-string
 ;
-; Input: a bencoded string of the format "<length>:<string>"
+; Input: a bencoded character sequence of the format "<length>:<string>"
 ;   Example:
-;   "7:puppies"
+;   '(\7 \: \p \u \p \p \i \e \s)
 ;
-; Output: a vector with the parsed string and the rest of the string
+; Output: a vector with the parsed string and the rest of the character sequence
 ;   Example:
-;   ["puppies" ""]
+;   ["puppies" '()]
 (defn read-bencoded-string [string]
-  (let [[length-string remainder] (clojure.string/split string #":" 2)
-       length (Integer. (apply str length-string))
-       [parsed-string remainder] (split-at length remainder)
-       ]
+  (let [string (apply str string)
+        [length-string remainder] (clojure.string/split string #":" 2)
+        length (Integer. length-string)
+        [parsed-string remainder] (split-at length remainder)]
     [(apply str parsed-string) remainder]))
 
 ; read-bencoded-list
@@ -110,24 +110,18 @@
       ; Stopping condition: empty string (base recursion case)
       nil ""
       ; Integers
-      \i (let [[parsed-int remaining-str]
-               (read-bencoded-integer
-                 ; cast char sequence to string
-                 (apply str (rest string)))]
-           (into [parsed-int]
-                 (read-bencode-recur remaining-str)))
+      \i (let [[parsed-int remaining-str] (read-bencoded-integer (rest string))]
+           (into [parsed-int] (read-bencode-recur remaining-str)))
       ; Lists
       \l (let [[parsed-list remaining-stream]
-               (private-read-bencoded-list (apply str (rest string)))]
+               (private-read-bencoded-list (rest string))]
                (into [parsed-list]
                      (read-bencode-recur remaining-stream)))
 
       ; else check if first character is a digit
       (if (Character/isDigit first-char)
         ; String
-        (let [[parsed-str remaining-str]
-              (read-bencoded-string string)
-              remaining-str (apply str remaining-str)]
+        (let [[parsed-str remaining-str] (read-bencoded-string string)]
           (into [parsed-str]
                 (read-bencode-recur remaining-str)))
         ; Unsupported bencode type
