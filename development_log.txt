@@ -1,3 +1,26 @@
+12/31/2014
+Worked towards refactoring the core recursive parsing function to be more
+easily reusable for list (and later dictionary) parsing.  Input for a list will
+contain a text stream resembling a bencoded file, but with different stopping
+conditions.
+
+The old way of parsing integers and strings expected strict Java types.
+Switched some implementations to tolerate character sequences and some
+implementations DRY-ed up immensely.  Programming to sequences seems like a
+Clojure-esque way of doing things.
+
+Long stack traces and a non-Lisp aware editor made development and debugging a
+bit painful.  Colored stack traces might improve development, as would some
+kind of vim paren/object manipulation plugin.
+
+Pair programming today kept me from yak shaving as much as I did in the
+previous days, though soloing in previous days made pairing today smooth, as I
+was ramped up on my own project.
+
+LEIN_FAST_TRAMPOLINE ENV var was getting ignored in vim.  It gets picked up in
+vim a new window, now that it's been added to my bash_profile.  Quirky.
+
+
 12/26/2014
 String types: count errors in string lengths for test
 Spent an hour debugging why a test was failing.  The implementation was where I
