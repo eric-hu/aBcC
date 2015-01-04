@@ -94,7 +94,23 @@
 ; 2. the remainder of the unparsed string
 
 (defn- private-read-bencoded-list [string]
-  )
+  (let [first-char (first string)
+        rest-string (rest string)]
+    (condp = first-char
+      ; Stopping condition: first character is "e"
+      \e [[] rest-string]
+
+      (if (Character/isDigit first-char)
+        ; Strings
+        (let [[parsed-str remaining-str] (read-bencoded-string string)
+              [partial-res remaining-string] (private-read-bencoded-list remaining-str)
+              res-vector (into [parsed-str] partial-res)
+              res [res-vector remaining-string]]
+            res)
+        ; Unsupported bencode type
+        (throw (Exception. (str
+                             "Unrecognized bencode-list type.  First character: "
+                             first-char)))))))
 
 ; read-bencode-recur
 ;
