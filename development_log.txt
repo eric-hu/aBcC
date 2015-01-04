@@ -1,3 +1,48 @@
+1/4/2015
+List parsing: Seemed to get basic list parsing working; previously written
+tests pass.  Pairing on 12/31 (really 12/30) cleaned up the recursive function
+enough that setting up the list-parsing recursive function with a
+similar-but-slightly-different recursive dispatch was mostly simple.  I spent
+about 10 minutes getting an almost-working implementation, then 1-2 hours
+debugging why it was returning with the calls I expected, and then some.
+
+Recursion debugging: debugging recursive functions is kind of a pain, as the
+built-in stack traces don't provide much to distinguish separate method calls.
+An idea that simply came to me while working on this was to add an ID print
+with each method invocation.  There's a tool in the nrepl namespace for
+generating UUIDs.  I was able to find it and use it in lein repl, but not in my
+code.  Clojure.core/rand is not universal, but it's good enough for debugging
+purposes.
+
+Stack traces: Stack traces in Clojure are really Java stack traces, so I've
+found that they almost always contain too much noise.  Usually this noise is
+all clumped together as the bottom screen's worth of stack traces, so I can
+just scroll to the top.  Maybe I can investigate reducing the number of pops
+for the default Clojure stack trace.
+
+Non tail-call recursion, returning multiple values: the issue that took 1-2
+hours of debugging was that my list-recursive parser, which is called from the
+top-level recursive parser, returned two values in a vector that is meant to be
+destructured.  The recursive calls are almost tail calls, but not quite.  Some
+work is done after a recursive call to destructure the partial result and
+restructure it before a return.  I know that tail call recursion tends to be
+easier for compilers to optimize, but I wonder if it might also be easier to
+reason about.  In today's case, I had about 5 levels of recursion when I
+expected 3, and all 5 levels were present in my debug logs.  Keeping track of
+this all, even with the debug output, was difficult.  It probably would have
+been easier with fewer calls in the stack.
+
+One possible way to simplify this information further is to break it up into
+more functions, so that each function needs only return one value and one value
+truly.  Returning multiple values in a vector definitely feels like a hack
+around the fact that functions can only return one value (or is there another
+way to do this?).
+
+Regular structure: I'm starting to appreciate the regular structure of lisp
+code.  At multiple times when debugging, printing out intermediate results was
+a straightforward operation.
+
+
 12/31/2014
 Worked towards refactoring the core recursive parsing function to be more
 easily reusable for list (and later dictionary) parsing.  Input for a list will
