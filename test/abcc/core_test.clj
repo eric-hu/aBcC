@@ -42,8 +42,8 @@
          (read-bencode "l9:big daddy12:little daddye"))))
   (testing "it reads a list with other bencode types"
     (is (=
-         [["big daddy" "little daddy"] "pies"]
-         (read-bencode "l9:big daddy12:little daddye4:pies"))))
+         [["big daddy" "little daddy" 15] "pies"]
+         (read-bencode "l9:big daddy12:little daddyi15ee4:pies"))))
 
   ; Mixed: string-number
   (testing
