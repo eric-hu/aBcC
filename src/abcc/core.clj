@@ -86,27 +86,26 @@
 
 ; read-bencoded-list
 ;
-; Takes a string of bencode formatting and parses it in bencode type chunks.
-; It stops when the first character is \e.
+; Takes two arguments:
+; 1. a sequence of outputs already parsed into the list
+; 2. the input string, in bencode formatting
+;
+; Parses it in bencode type chunks, stopping when the first character is \e.
 ;
 ; Returns a vector with 2 values:
 ; 1. the parsed list, a vector itself
 ; 2. the remainder of the unparsed string
-
-(defn- private-read-bencoded-list [string]
-  (let [first-char (first string)
-        rest-string (rest string)]
+(defn- private-read-bencoded-list [partial-output input]
+  (let [first-char (first input)
+        rest-input (rest input)]
     (condp = first-char
       ; Stopping condition: first character is "e"
-      \e [[] rest-string]
+      \e [partial-output rest-input]
 
       (if (Character/isDigit first-char)
         ; Strings
-        (let [[parsed-str remaining-str] (read-bencoded-string string)
-              [partial-res remaining-string] (private-read-bencoded-list remaining-str)
-              res-vector (into [parsed-str] partial-res)
-              res [res-vector remaining-string]]
-            res)
+        (let [[parsed-str remaining-str] (read-bencoded-string input)]
+          (recur (conj partial-output parsed-str) remaining-str))
         ; Unsupported bencode type
         (throw (Exception. (str
                              "Unrecognized bencode-list type.  First character: "
@@ -130,7 +129,7 @@
            (into [parsed-int] (read-bencode-recur remaining-str)))
       ; Lists
       \l (let [[parsed-list remaining-stream]
-               (private-read-bencoded-list (rest string))]
+               (private-read-bencoded-list [] (rest string))]
                (into [parsed-list]
                      (read-bencode-recur remaining-stream)))
 
