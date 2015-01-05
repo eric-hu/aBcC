@@ -62,8 +62,8 @@
     (is (= ["super fuzzy" '()] (read-bencoded-string "11:super fuzzy"))))
 
   (testing
-    "it returns the parsed string when passed a properly bencoded character sequence")
-    (is (= ["super" '()] (read-bencoded-string '(\5 \: \s \u \p \e \r)))))
+    "it returns the parsed string when passed a properly bencoded character sequence"
+    (is (= ["super" '()] (read-bencoded-string '(\5 \: \s \u \p \e \r))))))
 
 (deftest test-read-bencoded-integer
   (testing
