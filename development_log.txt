@@ -1,3 +1,44 @@
+1/5/2015
+Arity-overloading: I defined my first arity-overloaded function today.  I had
+mixed feelings while using it.  Part of it feels a little dirty, coming from an
+OO world.  It feels like the function is violating the idea of SRP.  I reminded
+myself that SRP was defined on class definitions, so it doesn't really apply to
+functions.  This isn't to say that I believe functions can be arbitrarily
+large, but the division of responsibility between an FP style and an OO style
+looks different.
+
+Default case: By the end of my work today, I felt like using arity-overloading
+to handle default cases, when using recursion, was actually a clean way to
+implement behavior.  There's an "if" that's rendered implicit that would have
+to be explicit without arity-overloading.
+
+Recur: Clojure apparently does not perform tail call optimizations for
+recursion, except when "recur" is used.  "Recur" based recursion does not
+consume additional stack frames, and is recommended for functions intended to
+run on data with unknown bounds.  Changing a recursive function to use "recur"
+means making the recursive call a tail call.  Doing this sometimes means
+passing "wrap-up" work forward to the next call.
+
+Accumulating output: This seems to be another clean case for using
+arity-overloading.
+
+Elegance (fear of inelegance): oftentimes I've had stare-at-the-screen moments
+when I have a rough idea of what to do, but no idea of how to do it cleanly.
+To this, I say that I want myself to continue with dirty implementations over
+stagnating while trying to find a clean one.
+
+Test-driving: I've been fairly happy with my sense of progress while using a
+test-driving approach.  This hygiene practice has carried over cleanly from my
+work and really helps me to keep a sane chunk of work in front of me--and
+sometimes it points out that my assumptions are wrong.
+
+Density: I still can't get over how dense some Clojure code comes out.
+Sometimes I feel like it's too dense, but maybe it just takes a while to get
+used to.  It does seem beginner-unfriendly.  I would be nervous to be on a team
+of developers and have a new person join who's unfamiliar with Clojure.
+Perhaps that just reflects my immaturity as a developer.
+
+
 1/4/2015
 List parsing: Seemed to get basic list parsing working; previously written
 tests pass.  Pairing on 12/31 (really 12/30) cleaned up the recursive function
