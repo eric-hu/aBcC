@@ -123,6 +123,29 @@
                               "Unrecognized bencode-list type.  First character: "
                               first-char))))))))
 
+(declare private-parse-bencoded-value)
+
+(defn- private-read-bencoded-dict
+  ([input] (private-read-bencoded-dict {} input))
+  ([accumulated-dict input]
+   (let [first-char (first input)
+         rest-input (rest input)]
+     (condp = first-char
+       nil (throw (Exception. "Unterminated dictionary.  'e' expected"))
+       ; Stopping condition: first character is "e"
+       \e [accumulated-dict rest-input]
+
+       (if (Character/isDigit first-char)
+         ; String for hash key
+         (let [[parsed-string rest-input-new] (read-bencoded-string input)
+               hash-key (keyword parsed-string)
+               [hash-value rest-input-new] (private-parse-bencoded-value rest-input-new)]
+           (recur (assoc accumulated-dict hash-key hash-value) rest-input-new))
+         ; Unsupported bencode type in this position
+         (throw (Exception. (str
+                              "Unrecognized bencode-dict type for hash-key.  First character: "
+                              first-char))))))))
+
 ; private-parse-bencoded-value
 ;
 ; Input: a non-empty string with a valid bencoded value
@@ -144,6 +167,9 @@
       ; Lists
       \l (private-read-bencoded-list rest-input)
 
+      ; Dictionaries
+      \d (private-read-bencoded-dict rest-input)
+
       (if (Character/isDigit first-char)
         ; Strings
         (read-bencoded-string input)
@@ -151,27 +177,6 @@
         (throw (Exception. (str
                              "Unrecognized bencode-list type.  First character: "
                              first-char)))))))
-
-
-(defn- private-read-bencoded-dict
-  ([input] (private-read-bencoded-dict {} input))
-  ([accumulated-dict input]
-   (let [first-char (first input)
-         rest-input (rest input)]
-     (condp = first-char
-       ; Stopping condition: first character is "e"
-       \e [accumulated-dict rest-input]
-
-       (if (Character/isDigit first-char)
-         ; String for hash key
-         (let [[parsed-string rest-input-new] (read-bencoded-string input)
-               hash-key (keyword parsed-string)
-               [hash-value rest-input-new] (private-parse-bencoded-value rest-input-new)]
-           (recur (assoc accumulated-dict hash-key hash-value) rest-input-new))
-         ; Unsupported bencode type in this position
-         (throw (Exception. (str
-                              "Unrecognized bencode-dict type for hash-key.  First character: "
-                              first-char))))))))
 
 ; read-bencode-recur
 ;

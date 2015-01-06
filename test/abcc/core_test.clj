@@ -58,7 +58,9 @@
             "dictionaries parse into maps with keywords for hash keys")
     (is (= [{:big "daddy"}] (read-bencode "d3:big5:daddye"))
             "dictionaries can have string hash-values"))
-  (testing "it reads nested dictionaries")
+  (testing "it reads nested dictionaries"
+    (is (= [{:big {:freakin {:hash "map"}}}]
+           (read-bencode "d3:bigd7:freakind4:hash3:mapeee"))))
 
   ; Mixed: string-number
   (testing
