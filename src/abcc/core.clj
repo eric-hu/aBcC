@@ -131,30 +131,31 @@
 ; recurring on the rest.  Stops when the first character of the string is nil.
 ;
 ; Returns the parsed values as a vector
-(defn read-bencode-recur [string]
-  (let [first-char (first string)]
-    (condp = first-char
-      ; Stopping condition: empty string (base recursion case)
-      nil ""
-      ; Integers
-      \i (let [[parsed-int remaining-str] (read-bencoded-integer (rest string))]
-           (into [parsed-int] (read-bencode-recur remaining-str)))
-      ; Lists
-      \l (let [[parsed-list remaining-stream]
-               (private-read-bencoded-list (rest string))]
-               (into [parsed-list]
-                     (read-bencode-recur remaining-stream)))
+(defn read-bencode-recur
+  ([string] (read-bencode-recur [] string))
+  ([accumulated-output string]
+   (let [first-char (first string)
+         rest-input (rest string)]
+     (condp = first-char
+       ; Stopping condition: empty string (base recursion case)
+       nil accumulated-output
+       ; Integers
+       \i (let [[parsed-int remaining-str] (read-bencoded-integer rest-input)]
+            (recur (conj accumulated-output parsed-int) remaining-str))
+       ; Lists
+       \l (let [[parsed-list remaining-stream]
+                (private-read-bencoded-list rest-input)]
+            (recur (conj accumulated-output parsed-list) remaining-stream))
 
-      ; else check if first character is a digit
-      (if (Character/isDigit first-char)
-        ; String
-        (let [[parsed-str remaining-str] (read-bencoded-string string)]
-          (into [parsed-str]
-                (read-bencode-recur remaining-str)))
-        ; Unsupported bencode type
-        (throw (Exception. (str
-                             "Unrecognized bencode type.  First character: "
-                             first-char)))))))
+       ; else check if first character is a digit
+       (if (Character/isDigit first-char)
+         ; String
+         (let [[parsed-str remaining-str] (read-bencoded-string string)]
+           (recur (conj accumulated-output parsed-str) remaining-str))
+         ; Unsupported bencode type
+         (throw (Exception. (str
+                              "Unrecognized bencode type.  First character: "
+                              first-char))))))))
 
 ; Read a bencoded string and parse the results into a collection of
 ; clojure values
