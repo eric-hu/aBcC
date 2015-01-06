@@ -108,7 +108,7 @@
        ; Stopping condition: first character is "e"
        \e [partial-output rest-input]
        ; Integers
-       \i (let [[parsed-int remaining-str] (read-bencoded-integer (rest input))]
+       \i (let [[parsed-int remaining-str] (read-bencoded-integer rest-input)]
             (recur (conj partial-output parsed-int) remaining-str))
        ; Lists
        \l (let [[parsed-list remaining-str] (private-read-bencoded-list rest-input)]
