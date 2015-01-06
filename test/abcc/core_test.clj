@@ -44,6 +44,13 @@
     (is (=
          [["big daddy" "little daddy" 15] "pies"]
          (read-bencode "l9:big daddy12:little daddyi15ee4:pies"))))
+  (testing "it reads nested lists"
+    (is (=
+         [["lolcat" ["paws"]] "bark"]
+         (read-bencode "l6:lolcatl4:pawsee4:bark")))
+    (is (=
+         [["deeply" ["nested" ["list"]]]]
+         (read-bencode "l6:deeplyl6:nestedl4:listeee"))))
 
   ; Mixed: string-number
   (testing
