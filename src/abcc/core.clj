@@ -22,23 +22,23 @@
 (defn read-torrent [filename]
   (slurp filename))
 
-; private-string-ends-with-e
+; private-string-ends-with-e?
 ; helper function for integer parsing
-(defn- private-string-ends-with-e
+(defn- private-string-ends-with-e?
   [remainder-string string]
   (and (= 0 (count remainder-string))
            (not (= \e (last string)))))
 
-; private-string-is-non-zero-and-begins-with-zero
+; private-string-is-non-zero-and-begins-with-zero?
 ; helper function for integer parsing
-(defn- private-string-is-non-zero-and-begins-with-zero
+(defn- private-string-is-non-zero-and-begins-with-zero?
   [number-as-string]
   (and (> (count number-as-string) 1)
          (= \0 (first number-as-string))))
 
-; private-string-is-negative-prefixed-zero
+; private-string-is-negative-prefixed-zero?
 ; helper function for integer parsing
-(defn- private-string-is-negative-prefixed-zero
+(defn- private-string-is-negative-prefixed-zero?
   [number-as-string]
   (or (and (= (count number-as-string) 2)
              (= \- (first number-as-string))
@@ -60,9 +60,9 @@
 (defn read-bencoded-integer [string]
   (let [[number-as-string remainder-string] (private-split-string-at-e string)]
     (if (or
-          (private-string-ends-with-e remainder-string string)
-          (private-string-is-non-zero-and-begins-with-zero number-as-string)
-          (private-string-is-negative-prefixed-zero number-as-string))
+          (private-string-ends-with-e? remainder-string string)
+          (private-string-is-non-zero-and-begins-with-zero? number-as-string)
+          (private-string-is-negative-prefixed-zero? number-as-string))
 
       (throw (Exception. "preconditions failed for integer bencode parsing"))
 
