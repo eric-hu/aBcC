@@ -1,3 +1,44 @@
+1/6/2015
+Cleanliness: I can feel old habits getting in the way of learning.  I'm still
+  sticking to my 80 character width coding hygiene, but it makes some line
+  formatting awkward.  It raises questions about how to properly format "let"
+  vectors when pairs need to be split up (i.e. key on one line, value on the
+  other).
+
+  Another part of me says that these curiosities ("what is well-formatted
+  Clojure in this situation?") are part of the natural progression of learning.
+  Instead of "obstructing" my learning, it can be said that I'm creating my own
+  motivation for learning more, though I am deviating from the linear path of
+  building out more features in this project.
+
+Error in test case, unterminated dictionary: This has highlighted the
+  utility of error checking on dictionaries and lists, which I've added to the
+  desired features of this project.
+
+Error in test case, invalid bencode string: This has happened a few times that
+  I can recall now.  I add invalid bencode strings into the test suite and then
+  try debugging errors that come from invalid data.  This is simply the cost of
+  hand-rolling bencoded data for my test suite instead of using a tool.
+  Unfortunately for bencoded strings, it appears that there's not much I could
+  actually check in terms of error-handling.  Strings that are declared as too
+  short or too long won't be known to be until the next parse attempt.  The
+  exception to this is when a string is the last bencoded value and is declared
+  to be longer than it actually is.  This seems like enough of an edge case
+  that I won't explicitly check it in code.
+
+  If this happens more, then it might be worthwhile to programmatically
+  generate bencoded test strings, since the operation is actually quite simple.
+
+"Declare" for mutual recursion: I recall looking for this feature while working
+  on this project previously.  What prevented me from finding it before was
+  that I lacked the vocabulary to know what to search for.  This problem has
+  illuminated to me the nature of learning.  One's capacity to learn in a new
+  domain is small because one's vocabulary in that domain is small.  There is
+  apparently a snowball effect in learning ability, as the domain vocabulary
+  grows large enough to form many meaningful connections.  "declare" was a real
+  joy to discover.
+
+
 1/5/2015
 Arity-overloading: I defined my first arity-overloaded function today.  I had
 mixed feelings while using it.  Part of it feels a little dirty, coming from an
