@@ -57,16 +57,16 @@
 ; Output: a vector of the Java integer and the remainder character sequence.
 ;   Example:
 ;   [33, (\4 \: \a \s \d \f)]
-(defn read-bencoded-integer [string]
-  (let [[number-as-string remainder-string] (private-split-string-at-e string)]
+(defn read-bencoded-integer [input]
+  (let [[number-as-string remainder-input] (private-split-string-at-e input)]
     (if (or
-          (private-string-ends-with-e? remainder-string string)
+          (private-string-ends-with-e? remainder-input input)
           (private-string-is-non-zero-and-begins-with-zero? number-as-string)
           (private-string-is-negative-prefixed-zero? number-as-string))
 
       (throw (Exception. "preconditions failed for integer bencode parsing"))
 
-      [(Integer. number-as-string) remainder-string])))
+      [(Integer. number-as-string) remainder-input])))
 
 ; read-bencoded-string
 ;
@@ -77,10 +77,10 @@
 ; Output: a vector with the parsed string and the rest of the character sequence
 ;   Example:
 ;   ["puppies" '()]
-(defn read-bencoded-string [string]
-  (let [string (apply str string)
-        [length-string remainder] (clojure.string/split string #":" 2)
-        length (Integer. length-string)
+(defn read-bencoded-string [input]
+  (let [input (apply str input)
+        [length-input remainder] (clojure.string/split input #":" 2)
+        length (Integer. length-input)
         [parsed-char-seq remainder] (split-at length remainder)]
     [(apply str parsed-char-seq) remainder]))
 
@@ -132,10 +132,10 @@
 ;
 ; Returns the parsed values as a vector
 (defn read-bencode-recur
-  ([string] (read-bencode-recur [] string))
-  ([accumulated-output string]
-   (let [first-char (first string)
-         rest-input (rest string)]
+  ([input] (read-bencode-recur [] input))
+  ([accumulated-output input]
+   (let [first-char (first input)
+         rest-input (rest input)]
      (condp = first-char
        ; Stopping condition: empty string (base recursion case)
        nil accumulated-output
@@ -150,7 +150,7 @@
        ; else check if first character is a digit
        (if (Character/isDigit first-char)
          ; String
-         (let [[parsed-string rest-input-new] (read-bencoded-string string)]
+         (let [[parsed-string rest-input-new] (read-bencoded-string input)]
            (recur (conj accumulated-output parsed-string) rest-input-new))
          ; Unsupported bencode type
          (throw (Exception. (str
@@ -159,5 +159,5 @@
 
 ; Read a bencoded string and parse the results into a collection of
 ; clojure values
-(defn read-bencode [string]
-  (read-bencode-recur string))
+(defn read-bencode [input]
+  (read-bencode-recur input))
