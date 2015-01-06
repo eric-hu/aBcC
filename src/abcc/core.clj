@@ -81,8 +81,8 @@
   (let [string (apply str string)
         [length-string remainder] (clojure.string/split string #":" 2)
         length (Integer. length-string)
-        [parsed-string remainder] (split-at length remainder)]
-    [(apply str parsed-string) remainder]))
+        [parsed-char-seq remainder] (split-at length remainder)]
+    [(apply str parsed-char-seq) remainder]))
 
 ; read-bencoded-list
 ; One argument form:
@@ -108,16 +108,16 @@
        ; Stopping condition: first character is "e"
        \e [partial-output rest-input]
        ; Integers
-       \i (let [[parsed-int remaining-str] (read-bencoded-integer rest-input)]
-            (recur (conj partial-output parsed-int) remaining-str))
+       \i (let [[parsed-int rest-input-new] (read-bencoded-integer rest-input)]
+            (recur (conj partial-output parsed-int) rest-input-new))
        ; Lists
-       \l (let [[parsed-list remaining-str] (private-read-bencoded-list rest-input)]
-            (recur (conj partial-output parsed-list) remaining-str))
+       \l (let [[parsed-list rest-input-new] (private-read-bencoded-list rest-input)]
+            (recur (conj partial-output parsed-list) rest-input-new))
 
        (if (Character/isDigit first-char)
          ; Strings
-         (let [[parsed-str remaining-str] (read-bencoded-string input)]
-           (recur (conj partial-output parsed-str) remaining-str))
+         (let [[parsed-string rest-input-new] (read-bencoded-string input)]
+           (recur (conj partial-output parsed-string) rest-input-new))
          ; Unsupported bencode type
          (throw (Exception. (str
                               "Unrecognized bencode-list type.  First character: "
@@ -140,18 +140,18 @@
        ; Stopping condition: empty string (base recursion case)
        nil accumulated-output
        ; Integers
-       \i (let [[parsed-int remaining-str] (read-bencoded-integer rest-input)]
-            (recur (conj accumulated-output parsed-int) remaining-str))
+       \i (let [[parsed-int rest-input-new] (read-bencoded-integer rest-input)]
+            (recur (conj accumulated-output parsed-int) rest-input-new))
        ; Lists
-       \l (let [[parsed-list remaining-stream]
+       \l (let [[parsed-list remaining-input]
                 (private-read-bencoded-list rest-input)]
-            (recur (conj accumulated-output parsed-list) remaining-stream))
+            (recur (conj accumulated-output parsed-list) remaining-input))
 
        ; else check if first character is a digit
        (if (Character/isDigit first-char)
          ; String
-         (let [[parsed-str remaining-str] (read-bencoded-string string)]
-           (recur (conj accumulated-output parsed-str) remaining-str))
+         (let [[parsed-string rest-input-new] (read-bencoded-string string)]
+           (recur (conj accumulated-output parsed-string) rest-input-new))
          ; Unsupported bencode type
          (throw (Exception. (str
                               "Unrecognized bencode type.  First character: "
