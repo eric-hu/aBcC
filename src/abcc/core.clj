@@ -123,6 +123,56 @@
                               "Unrecognized bencode-list type.  First character: "
                               first-char))))))))
 
+; private-parse-bencoded-value
+;
+; Input: a non-empty string with a valid bencoded value
+;
+; Output: a vector with two values:
+; 1. the next parsed value
+; 2. the remaining unparsed input as a sequence
+; *Note*: This output format is the same output format as:
+;   - read-bencoded-list
+;   - read-bencoded-integer
+;   - read-bencoded-string
+;   - private-read-bencoded-list
+(defn- private-parse-bencoded-value [input]
+  (let [first-char (first input)
+        rest-input (rest input)]
+    (condp = first-char
+      ; Integers
+      \i (read-bencoded-integer rest-input)
+      ; Lists
+      \l (private-read-bencoded-list rest-input)
+
+      (if (Character/isDigit first-char)
+        ; Strings
+        (read-bencoded-string input)
+        ; Unsupported bencode type
+        (throw (Exception. (str
+                             "Unrecognized bencode-list type.  First character: "
+                             first-char)))))))
+
+
+(defn- private-read-bencoded-dict
+  ([input] (private-read-bencoded-dict {} input))
+  ([accumulated-dict input]
+   (let [first-char (first input)
+         rest-input (rest input)]
+     (condp = first-char
+       ; Stopping condition: first character is "e"
+       \e [accumulated-dict rest-input]
+
+       (if (Character/isDigit first-char)
+         ; String for hash key
+         (let [[parsed-string rest-input-new] (read-bencoded-string input)
+               hash-key (keyword parsed-string)
+               [hash-value rest-input-new] (private-parse-bencoded-value rest-input-new)]
+           (recur (assoc accumulated-dict hash-key hash-value) rest-input-new))
+         ; Unsupported bencode type in this position
+         (throw (Exception. (str
+                              "Unrecognized bencode-dict type for hash-key.  First character: "
+                              first-char))))))))
+
 ; read-bencode-recur
 ;
 ; [string]
@@ -146,6 +196,10 @@
        \l (let [[parsed-list remaining-input]
                 (private-read-bencoded-list rest-input)]
             (recur (conj accumulated-output parsed-list) remaining-input))
+
+       ; Dictionaries
+       \d (let [[parsed-map remaining-input] (private-read-bencoded-dict rest-input)]
+            (recur (conj accumulated-output parsed-map) remaining-input))
 
        ; else check if first character is a digit
        (if (Character/isDigit first-char)

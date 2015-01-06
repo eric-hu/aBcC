@@ -52,6 +52,14 @@
          [["deeply" ["nested" ["list"]]]]
          (read-bencode "l6:deeplyl6:nestedl4:listeee"))))
 
+  ; Dictionaries
+  (testing "it reads simple dictionaries"
+    (is (= [{:big "daddy"}] (read-bencode "d3:big5:daddye"))
+            "dictionaries parse into maps with keywords for hash keys")
+    (is (= [{:big "daddy"}] (read-bencode "d3:big5:daddye"))
+            "dictionaries can have string hash-values"))
+  (testing "it reads nested dictionaries")
+
   ; Mixed: string-number
   (testing
     "it reads mixed bencoded strings and integers"
