@@ -84,6 +84,8 @@
         [parsed-char-seq remainder] (split-at length remainder)]
     [(apply str parsed-char-seq) remainder]))
 
+(declare private-read-bencoded-dict)
+
 ; read-bencoded-list
 ; One argument form:
 ; 1. The input string, in bencode formatting, assumed to be inside of a list
@@ -111,17 +113,23 @@
        \i (let [[parsed-int rest-input-new] (read-bencoded-integer rest-input)]
             (recur (conj partial-output parsed-int) rest-input-new))
        ; Lists
-       \l (let [[parsed-list rest-input-new] (private-read-bencoded-list rest-input)]
+       \l (let [[parsed-list rest-input-new] (private-read-bencoded-list
+                                               rest-input)]
             (recur (conj partial-output parsed-list) rest-input-new))
+
+       ; Dictionaries
+       \d (let [[parsed-dict rest-input-new] (private-read-bencoded-dict
+                                               rest-input)]
+            (recur (conj partial-output parsed-dict) rest-input-new))
 
        (if (Character/isDigit first-char)
          ; Strings
          (let [[parsed-string rest-input-new] (read-bencoded-string input)]
            (recur (conj partial-output parsed-string) rest-input-new))
          ; Unsupported bencode type
-         (throw (Exception. (str
-                              "Unrecognized bencode-list type.  First character: "
-                              first-char))))))))
+         (throw (Exception.
+                  (str "Unrecognized bencode-list type.  First character: "
+                       first-char))))))))
 
 (declare private-parse-bencoded-value)
 

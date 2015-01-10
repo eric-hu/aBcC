@@ -48,7 +48,10 @@
         "it reads nested lists")
     (is (= [["deeply" ["nested" ["list"]]]]
            (read-bencode "l6:deeplyl6:nestedl4:listeee"))
-        "it reads deeply nested lists"))
+        "it reads deeply nested lists")
+    (is (= [["complex" {:nested "list"}]]
+           (read-bencode "l7:complexd6:nested4:listee"))
+           "it reads a list with dictionary"))
 
   (testing "Simple Dictionaries"
     (is (= [{:big "daddy"}] (read-bencode "d3:big5:daddye"))
