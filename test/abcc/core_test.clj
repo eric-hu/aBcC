@@ -61,7 +61,11 @@
 
   (testing "Nested Dictionaries"
     (is (= [{:big {:freakin {:hash "map"}}}]
-           (read-bencode "d3:bigd7:freakind4:hash3:mapeee"))))
+           (read-bencode "d3:bigd7:freakind4:hash3:mapeee"))
+        "it reads dictionaries within dictionaries")
+    (is (= [{:hash ["list"]}]
+           (read-bencode "d4:hashl4:listee"))
+        "it reads dictionaries containing lists"))
 
   (testing "Mixed types"
     (is (= [2 "fuzzy kittens"] (read-bencode "i2e13:fuzzy kittens"))
