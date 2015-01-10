@@ -15,62 +15,60 @@
         "reads the announce attribute of a torrent file")))
 
 (deftest test-read-bencode
-  ; Numbers
-  (testing
-    "it reads a properly bencoded number"
-    (is (= [123] (read-bencode "i123e")))
-    (is (= [-3] (read-bencode "i-3e"))))
+  (testing "Numbers"
+    (is (= [123] (read-bencode "i123e"))
+        "it reads a properly bencoded positive number")
+    (is (= [-3] (read-bencode "i-3e"))
+        "it reads a properly bencoded negative number")
+    (is (= [321 12 3 345] (read-bencode "i321ei12ei3ei345e"))
+        "it reads multiple bencoded numbers"))
 
-  (testing
-    "it reads multiple bencoded numbers"
-    (is (= [123 12] (read-bencode "i123ei12e")))
-    (is (= [321 12 3 345] (read-bencode "i321ei12ei3ei345e"))))
+  (testing "Strings"
+    (is (= ["digit"] (read-bencode "5:digit"))
+       "it reads bencoded strings")
+    (is (= ["super fuzzy"] (read-bencode "11:super fuzzy"))
+        "it reads bencoded strings")
+    (is (= ["yolokitten"] (read-bencode "10:yolokitten"))
+        "it reads bencoded strings")
+    (is (= ["yolokitten" "yolopuppy"]
+         (read-bencode "10:yolokitten9:yolopuppy"))
+        "it reads bencoded strings"))
 
-  ; Strings
-  (testing "it reads bencoded strings"
-    (is (= ["digit"] (read-bencode "5:digit")))
-    (is (= ["super fuzzy"] (read-bencode "11:super fuzzy")))
-    (is (= ["yolokitten"] (read-bencode "10:yolokitten")))
-    (is (=
-         ["yolokitten" "yolopuppy"]
-         (read-bencode "10:yolokitten9:yolopuppy"))))
+  (testing "Lists"
+    (is (= [["big daddy" "little daddy"]]
+           (read-bencode "l9:big daddy12:little daddye"))
+        "it reads simple bencoded lists into vectors")
+    (is (= [["big daddy" "little daddy" 15] "pies"]
+           (read-bencode "l9:big daddy12:little daddyi15ee4:pies"))
+        "it reads a list with other bencode types"))
 
-  ; Lists
-  (testing "it reads simple bencoded lists into vectors"
-    (is (=
-         [["big daddy" "little daddy"]]
-         (read-bencode "l9:big daddy12:little daddye"))))
-  (testing "it reads a list with other bencode types"
-    (is (=
-         [["big daddy" "little daddy" 15] "pies"]
-         (read-bencode "l9:big daddy12:little daddyi15ee4:pies"))))
-  (testing "it reads nested lists"
-    (is (=
-         [["lolcat" ["paws"]] "bark"]
-         (read-bencode "l6:lolcatl4:pawsee4:bark")))
-    (is (=
-         [["deeply" ["nested" ["list"]]]]
-         (read-bencode "l6:deeplyl6:nestedl4:listeee"))))
+  (testing "Nested Lists"
+    (is (= [["lolcat" ["paws"]] "bark"]
+           (read-bencode "l6:lolcatl4:pawsee4:bark"))
+        "it reads nested lists")
+    (is (= [["deeply" ["nested" ["list"]]]]
+           (read-bencode "l6:deeplyl6:nestedl4:listeee"))
+        "it reads deeply nested lists"))
 
-  ; Dictionaries
-  (testing "it reads simple dictionaries"
+  (testing "Simple Dictionaries"
     (is (= [{:big "daddy"}] (read-bencode "d3:big5:daddye"))
             "dictionaries parse into maps with keywords for hash keys")
     (is (= [{:big "daddy"}] (read-bencode "d3:big5:daddye"))
             "dictionaries can have string hash-values"))
-  (testing "it reads nested dictionaries"
+
+  (testing "Nested Dictionaries"
     (is (= [{:big {:freakin {:hash "map"}}}]
            (read-bencode "d3:bigd7:freakind4:hash3:mapeee"))))
 
-  ; Mixed: string-number
-  (testing
-    "it reads mixed bencoded strings and integers"
-    (is (= [2 "fuzzy kittens"] (read-bencode "i2e13:fuzzy kittens")))
-    (is (= ["fuzzy kittens" 2] (read-bencode "13:fuzzy kittensi2e"))))
+  (testing "Mixed types"
+    (is (= [2 "fuzzy kittens"] (read-bencode "i2e13:fuzzy kittens"))
+        "it reads mixed bencoded strings and integers")
+    (is (= ["fuzzy kittens" 2] (read-bencode "13:fuzzy kittensi2e"))
+        "it reads mixed bencoded strings and integers"))
 
-  ; Errors
-  (testing "it raises an exception when given an invalid bencode string"
-    (is (thrown? Exception (read-bencode "z")))))
+  (testing "Errors"
+    (is (thrown? Exception (read-bencode "z"))
+        "it raises an exception when given an invalid bencode string")))
 
 (deftest test-read-bencoded-string
 
