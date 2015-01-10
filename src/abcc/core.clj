@@ -183,7 +183,7 @@
         (read-bencoded-string input)
         ; Unsupported bencode type
         (throw (Exception. (str
-                             "Unrecognized bencode-list type.  First character: "
+                             "Unrecognized bencode type.  First character: "
                              first-char)))))))
 
 ; read-bencode-recur
