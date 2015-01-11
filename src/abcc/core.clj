@@ -84,7 +84,7 @@
         [parsed-char-seq remainder] (split-at length remainder)]
     [(apply str parsed-char-seq) remainder]))
 
-(declare private-read-bencoded-dict)
+(declare private-parse-bencoded-value)
 
 ; read-bencoded-list
 ; One argument form:
@@ -104,34 +104,11 @@
 (defn- private-read-bencoded-list
   ([input] (private-read-bencoded-list [] input))
   ([partial-output input]
-   (let [first-char (first input)
-         rest-input (rest input)]
-     (condp = first-char
-       ; Stopping condition: first character is "e"
-       \e [partial-output rest-input]
-       ; Integers
-       \i (let [[parsed-int rest-input-new] (read-bencoded-integer rest-input)]
-            (recur (conj partial-output parsed-int) rest-input-new))
-       ; Lists
-       \l (let [[parsed-list rest-input-new] (private-read-bencoded-list
-                                               rest-input)]
-            (recur (conj partial-output parsed-list) rest-input-new))
+   (if (= (first input) \e)
+     [partial-output (rest input)]
 
-       ; Dictionaries
-       \d (let [[parsed-dict rest-input-new] (private-read-bencoded-dict
-                                               rest-input)]
-            (recur (conj partial-output parsed-dict) rest-input-new))
-
-       (if (Character/isDigit first-char)
-         ; Strings
-         (let [[parsed-string rest-input-new] (read-bencoded-string input)]
-           (recur (conj partial-output parsed-string) rest-input-new))
-         ; Unsupported bencode type
-         (throw (Exception.
-                  (str "Unrecognized bencode-list type.  First character: "
-                       first-char))))))))
-
-(declare private-parse-bencoded-value)
+     (let [[parsed-token rest-input] (private-parse-bencoded-value input)]
+       (recur (conj partial-output parsed-token) rest-input)))))
 
 (defn- private-read-bencoded-dict
   ([input] (private-read-bencoded-dict {} input))
