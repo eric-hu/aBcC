@@ -197,32 +197,12 @@
 (defn read-bencode-recur
   ([input] (read-bencode-recur [] input))
   ([accumulated-output input]
-   (let [first-char (first input)
-         rest-input (rest input)]
-     (condp = first-char
+   (if (= (first input) nil)
        ; Stopping condition: empty string (base recursion case)
-       nil accumulated-output
-       ; Integers
-       \i (let [[parsed-int rest-input-new] (read-bencoded-integer rest-input)]
-            (recur (conj accumulated-output parsed-int) rest-input-new))
-       ; Lists
-       \l (let [[parsed-list remaining-input]
-                (private-read-bencoded-list rest-input)]
-            (recur (conj accumulated-output parsed-list) remaining-input))
+       accumulated-output
 
-       ; Dictionaries
-       \d (let [[parsed-map remaining-input] (private-read-bencoded-dict rest-input)]
-            (recur (conj accumulated-output parsed-map) remaining-input))
-
-       ; else check if first character is a digit
-       (if (Character/isDigit first-char)
-         ; String
-         (let [[parsed-string rest-input-new] (read-bencoded-string input)]
-           (recur (conj accumulated-output parsed-string) rest-input-new))
-         ; Unsupported bencode type
-         (throw (Exception. (str
-                              "Unrecognized bencode type.  First character: "
-                              first-char))))))))
+       (let [[parsed-token rest-input] (private-parse-bencoded-value input)]
+         (recur (conj accumulated-output parsed-token) rest-input)))))
 
 ; Read a bencoded string and parse the results into a collection of
 ; clojure values
