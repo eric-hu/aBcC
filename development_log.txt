@@ -1,3 +1,25 @@
+1/10/2015
+Sloppiness:
+
+As I look over my tests, I can't help but feel like my tests are quite sloppy.
+It's kind of refreshing to find myself back in this this place, so unfamiliar.
+It revises my awareness for where beginners come from, both in the programming
+world and outside.
+
+Leave it dirty:
+
+The refactorings I did today were natural removals of duplicated code that
+became apparent once all the list, dictionary, and full-file parsing functions
+were written.  I remember first sitting down with this problem and thinking
+long and hard about how to generalize the parsing so that no unnecessary code
+would be written.  I didn't get very far with that approach.
+
+There's a certain ease of refactoring that can emerge if one is willing to
+leave code dirty, even knowing that there will be some duplicated effort.  Code
+that is written and deleted before a feature is complete isn't wasted.  It's
+scaffolding for the final product.
+
+
 1/6/2015
 Cleanliness: I can feel old habits getting in the way of learning.  I'm still
   sticking to my 80 character width coding hygiene, but it makes some line
