@@ -19,8 +19,13 @@
   (alter-var-root #'*read-eval* (constantly false))
   (println "Hello, World!"))
 
-(defn read-torrent [filename]
-  (slurp filename))
+(declare read-bencode)
+
+(defn read-torrent
+ ([filename]
+  (read-bencode (slurp filename)))
+ ([filename encoding]
+  (read-bencode (slurp filename :encoding encoding))))
 
 ; private-string-ends-with-e?
 ; helper function for integer parsing

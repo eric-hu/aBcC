@@ -4,11 +4,15 @@
 
 (deftest test-read-torrent
   (testing "it reads and parses a torrent file"
+    (is (thrown? Exception
+                 (read-torrent "test/ubuntu-14.04-desktop-i386.iso.torrent"))
+        "reading a file with the wrong encoding throws an exception")
     (is (not (=
               0
               (count
-                (read-torrent "test/ubuntu-14.04-desktop-i386.iso.torrent"))))
-        "non zero file opened")
+                (read-torrent "test/ubuntu-14.04-desktop-i386.iso.torrent"
+                              "latin1"))))
+        "it takes an argument specifying the file encoding type")
 
     ; PENDING: clojure test doesn't have a pending :(
     #_(is false
