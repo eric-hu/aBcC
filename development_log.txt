@@ -1,3 +1,41 @@
+1/18/2015
+
+Focus:
+
+I was only able to dedicate a couple of hours of focused time today, along with
+a couple more hours of unfocused time.  Doing this while multi-tasking is not a
+fruitful endeavor.
+
+Simplify when debugging:
+
+I picked up today where I left off previously--the bencode parser that I
+believe to be working correctly was not parsing the Ubuntu iso torrent.  I
+suspected it might have to do with file encoding, but didn't quite know how to
+verify this.  I ended up googling for a small torrent example file to work off
+of, and this pointed me in the right direction.
+
+The smaller file was one I could open and fully contain in my head, and it
+looked as I expected _in vim_.  It gave me a similar error when I loaded it up
+in the Clojure REPL and tried parsing it.  However, I noticed that what I was
+slurping from the file didn't match what I saw in vim.  This prompted me to
+re-check my experience in vim, and I noticed that vim reported "[converted]"
+when the file was opened.
+
+I googled for this and apparently vim does some auto-conversion of files that
+it opens.  It stores the target encoding in the ":set encoding" variable, and
+the source encoding in ":set fileencoding" variable.  Bingo, latin1 is the
+encoding of the smaller torrent file as well as the Ubuntu file.
+
+Character encoding:
+
+Apparently the world of character encoding is a big mess.  I found a Joel
+Spokesky article about character encoding, which was comprehensive, and I
+really hoped my problem didn't lay in having to autodetect character encoding
+by examining bytes.  Thankfully, I got my test cases working without that, but
+if I were making a production torrent client, then I would want to provide
+automatic character encoding detection.
+
+
 1/10/2015
 Sloppiness:
 
