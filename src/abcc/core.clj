@@ -1,5 +1,7 @@
 (ns abcc.core
-  (:gen-class))
+  (:gen-class)
+  (:require [clojure.pprint :as pp]
+            [clj-http.client :as client]))
 
 ; private-split-string-at-e
 ;
@@ -11,13 +13,6 @@
 ;   Example: [(\a) (\d \e \f)]
 (defn- private-split-string-at-e [string]
   (clojure.string/split (apply str string) #"e" 2))
-
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  ;; work around dangerous default behaviour in Clojure
-  (alter-var-root #'*read-eval* (constantly false))
-  (println "Hello, World!"))
 
 (declare read-bencode)
 
@@ -190,3 +185,16 @@
 ; clojure values
 (defn read-bencode [input]
   (read-bencode-recur input))
+
+(defn -main
+  "I don't do a whole lot ... yet."
+  [& args]
+  ;; work around dangerous default behaviour in Clojure
+  (alter-var-root #'*read-eval* (constantly false))
+  (let [torrent-info (first
+                       (read-torrent "test/marriageofheaven00blak_archive.torrent"
+                                     "latin1"))
+        announce-url (:announce torrent-info)]
+    (pp/pprint announce-url)
+    #_(pp/pprint (client/get announce-url)))
+  (println "Hello, World!"))

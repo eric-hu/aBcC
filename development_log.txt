@@ -1,3 +1,54 @@
+1/24/2015
+
+Re-encode?
+
+In an interesting twist, one of the first steps in communicating with a tracker
+is to send a SHA-1 encoding of the requested torrents' info hash from the
+torrent metadata file.  That is, one is supposed to apply SHA-1 to the value of
+the "info" key in the bencode dictionary, without decoding the value.
+
+A couple of different approaches are discussed online:
+
+1. Re-encode the value of "info" from the dictionary.
+2. Read the remainder of the input file after "info" raw.
+
+Approach 1 seems wasteful, however, that isn't an issue with correctness, just
+efficiency.  Approach 2 seems efficient, but is making a gaping assumption that
+the "info" key is the last key in the dictionary (otherwise it's unknown how
+many terminator characters need to be discarded).
+
+Most of my work tonight was trying to run through some of this work by hand,
+trying to send the data over the wire to a torrent tracker.  I generally
+received undescriptive error messages from the server.  Upon reviewing the
+bittorrent spec, I see that there are several parameters that should be passed
+in the request.  Some have the "optional" label, most do not.  It seems that
+trying to get a successful request by passing one parameter at a time is a weak
+strategy, as the error messages from the tracker did not return specifics about
+what was invalid.
+
+Wireshark:
+
+I found a blog of someone else who went through a torrent client exercise.  Her
+suggestion for doing this was to use a packet sniffer and another torrent
+client as a reference.  Some part of me wanted to be purist about this whole
+experience, but I see that eventually I'd have to talk to a tracker server that
+I haven't built, at the very least.
+
+Test Driving:
+
+I took a non-test driven approach to get a first understanding of the problem
+domain.  I can see that test driving is not always the easiest way to solve a
+problem.  For exploring a new API, it's much less constraining to make requests
+interactively to discover what my expectations are.
+
+Next steps:
+
+I think monitoring packets sent by a 3rd party client is a good first start.
+It'll shorten the development feedback cycles to know how a valid
+implementation calculates the info hash, so I can use the raw value instead of
+a guess-and-check approach of checking my work.  Installing a packet sniffing
+tool seems to be the next best use of my time.
+
 1/18/2015
 
 Focus:
