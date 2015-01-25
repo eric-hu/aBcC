@@ -5,12 +5,12 @@
 (deftest test-read-torrent
   (testing "it reads and parses a torrent file"
     (is (thrown? Exception
-                 (read-torrent "test/ubuntu-14.04-desktop-i386.iso.torrent"))
+                 (read-torrent "test/marriageofheaven00blak_archive.torrent"))
         "reading a file with the wrong encoding throws an exception")
     (is (not (=
               0
               (count
-                (read-torrent "test/ubuntu-14.04-desktop-i386.iso.torrent"
+                (read-torrent "test/marriageofheaven00blak_archive.torrent"
                               "latin1"))))
         "it takes an argument specifying the file encoding type")
 
