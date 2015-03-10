@@ -1,3 +1,42 @@
+3/9/2015
+
+Spiking
+
+I discovered my next step by spiking on the next minimal feature.  It's been a
+while since I last integrated spiking into my normal feature development
+workflow.  It's quite nice.
+
+Validation
+
+I was wrong about the minimum necessary parameters to connect to a tracker.
+The only key-value pair required for connecting is "info_hash", which I
+discovered by packet sniffing a third party tracker client.  I was then able to
+strip down its query string, one argument at a time until only "info_hash" was
+left.
+
+Changing the value of info_hash to something invalid changed the tracker
+response from a 200 request with a body to a 400 without one.  The key to
+getting a proper response is to have a valid info_hash key-value pair.  It
+would appear that the next step is choosing a strategy for generating a valid
+info_hash.  I think I prefer approach 1 described from my last post, as it
+is more robust against different torrent files and makes for a better learning
+experience, which is what this project is all about.
+
+Refactoring, organization
+
+To date, I've put all functions in the core class of this project.  The next
+feature I want to work on is bencode-encoding, which is related to
+bencode-decoding.  This feels like as good a place as any to break these out
+into a project library and learn about how to organize Clojure code a little
+better.
+
+Lein-ancient
+
+Lein-ancient is the first piece of functionality that I consider basic for
+dependency management not supported out of the box by Leiningen.  It's a plugin
+that allows for dependencies to be checked.  Installation was pretty simple, as
+was using it to update my profile dependencies.
+
 1/24/2015
 
 Re-encode?
