@@ -1,3 +1,45 @@
+3/23/2015
+
+Encoding
+
+It's surprising how details of only one side of a language or format are
+thought about when writing a parser.  When I built the bencode decoder, I felt
+like I thought through the bencode format to a fair depth.  Now that I'm
+building the translation from some Clojure structures into bencode, I'm
+realizing sublteties of some basic Clojure data types.  I also have some more
+questions about the Bencode data types.  Some questions include:
+
+- What should I do with Clojure floats?
+  - These are unnecessary to support, since Bencode doesn't have floats
+- What about Clojure character sequences?
+  - Support for these might be desired, based on my experience with strings and
+    character sequences being interchangeable.  For now, I'll say that it can
+    be built when needed.
+- Do Bencode hashes have to be sorted?
+- How many ways are there to represent the same Bencode dictionary as a Clojure
+  hash?
+  - At least keyword and string based keys come to mind
+- Does Clojure iterate over maps in any particular order?
+- How should the bencode encoder handle hashmaps with colliding entries?
+
+Slow and Steady
+
+A part of me inside flares up with impatience about getting more feature
+completion faster.  A conversation I had at work today reminded me that I
+really believe in the value of slow and steady learning.  If I had to quantify
+most of my developer knowledge, I would say that most of it was earned in small
+pieces, not large chunks.
+
+Stumbles
+
+I stumbled around with lazy sequences and anonymous functions a bit today.  I
+eventually figured out what I need, but I can see that I don't quite have the
+intuition to pick up when an error is due to an unrealized sequence.
+Similarly, I spent some time trying to get the syntax right for an anonmous
+function.  When all was said and done, I had concerns about the quality of the
+code I wrote, but that can be refactored for style another day.
+
+
 3/9/2015
 
 Spiking
