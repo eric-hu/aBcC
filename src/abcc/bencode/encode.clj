@@ -1,24 +1,23 @@
 (ns abcc.bencode.encode
   (:gen-class))
 
-(defn- encode-string [source]
+(defmulti to-bencoded-string class)
+
+(defmethod to-bencoded-string java.lang.String [source]
   (str (.length source) \: source))
 
-(defn- encode-number [source]
+(defmethod to-bencoded-string java.lang.Long [source]
   (str \i source \e))
 
-(declare to-bencoded-string)
-
-(defn- encode-map [source]
-  (let [contents (reduce-kv #(str %1
-                                  (to-bencoded-string %2)
-                                  (to-bencoded-string %3))
-                            ""
-                            source)]
+(defmethod to-bencoded-string java.util.Map [source]
+  (let [contents (->> source
+                      seq
+                      flatten
+                      (map to-bencoded-string)
+                      (apply str))]
     (str "d" contents "e")))
 
-(defn to-bencoded-string [source]
-  (condp = (class source)
-   java.lang.String (encode-string source)
-   java.lang.Long (encode-number source)
-   clojure.lang.PersistentArrayMap (encode-map source)))
+(defmethod to-bencoded-string java.util.List [source]
+  (str "l"
+      (apply str (map to-bencoded-string source))
+      "e"))

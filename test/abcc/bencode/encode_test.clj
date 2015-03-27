@@ -10,4 +10,6 @@
     (is (= "i123e" (to-bencoded-string 123))
         "Clojure integers are encoded to bencode integers")
     (is (= "d1:ai2e1:bi3ee" (to-bencoded-string {"a" 2, "b" 3}))
-        "Clojure hashmaps are encoded to bencode dictionaries")))
+        "Clojure hashmaps are encoded to bencode dictionaries")
+    (is (= "le" (to-bencoded-string []))
+        "Empty Clojure vectors are encoded to bencode lists")))
