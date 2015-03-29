@@ -6,13 +6,16 @@
 (defmethod to-bencoded-string java.lang.String [source]
   (str (.length source) \: source))
 
-(defmethod to-bencoded-string java.lang.Long [source]
+(defmethod to-bencoded-string clojure.lang.Keyword [source]
+  (to-bencoded-string (name source)))
+
+(defmethod to-bencoded-string java.lang.Number [source]
   (str \i source \e))
 
 (defmethod to-bencoded-string java.util.Map [source]
   (let [contents (->> source
-                      seq
-                      flatten
+                      (into (sorted-map))
+                      (apply concat)
                       (map to-bencoded-string)
                       (apply str))]
     (str "d" contents "e")))
