@@ -1,3 +1,16 @@
+6/26/2015
+
+Paired today, working on this for the first time in months.  It's much easier
+to carve out time for this when someone else is interested too.
+
+We created a test out of the result of past packet-sniffing work on the
+handshake protocol.  SHA1 encoded version of string is not mapping to what I
+want.
+
+Next steps:
+- Try decoding and encoding "info" value from file, compare with original.  We
+  expect it to be the same, it's possible that it's not.
+
 3/23/2015
 
 Encoding
