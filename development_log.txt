@@ -1,3 +1,29 @@
+8/21/2015
+
+Paired today.  Spent most of the time again trying to figure out why an
+encoded, hashed value we built doesn't match what we've packet sniffed from a
+known working bittorrent client.  Used a Ruby REPL to help us reason about some
+encodings, but ran into inconsistencies that left us scratching our heads.
+
+Concluded the pairing session by talking about forward progress and learning
+about Clojure.  Figuring out differences in byte encodings feels less
+gratifying than learning about other aspects of Clojure.
+
+Things learned:
+- Ruby represents bytes differently from Java (Java: signed ints, Ruby:
+  unsigned ints (?))
+- Ruby and Java may decode URLs differently (different byte arrays produced
+  from the decoding the same string)
+- in Clojure and Java, byte arrays show up as a "[B" when you query for their
+  class
+- byte arrays have a length _field_, which is called using ".-field" syntax in
+  Clojure
+
+Next steps/ideas:
+- try to tease out differences in Ruby and Java URL decoding schemes.  Maybe
+  try encoding the same string in both languages?
+- google for Java bittorrent source code
+
 6/26/2015
 
 Paired today, working on this for the first time in months.  It's much easier
